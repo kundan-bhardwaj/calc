@@ -1,24 +1,19 @@
+import kivy
 import kivymd
 import math
-from kivy.properties import StringProperty
-from kivy.uix.textinput import TextInput
-import PIL
 import random
-from kivy.uix.videoplayer import VideoPlayer
-import webbrowser
-from kivy.uix.boxlayout import BoxLayout
-from kivymd.uix.button import MDFillRoundFlatButton
+from kivy.core.audio import SoundLoader
+from fractions import Fraction
+from kivy.uix.textinput import TextInput
+from kivy.properties import StringProperty
 from kivymd.app import MDApp
 from kivy.lang.builder import Builder
-from kivy.uix.image import AsyncImage
-from kivy.uix.screenmanager import Screen,ScreenManager,NoTransition
+from kivy.uix.screenmanager import Screen,ScreenManager
 
 screen_helper = """
-#: import NoTransition kivy.uix.screenmanager.NoTransition
 ScreenManager:
 	id: screen_manager
 	MenuScreen:
-	otherscreen:
 <txt>:
 <MenuScreen>:
 	name: 'menu'
@@ -28,128 +23,183 @@ ScreenManager:
                 BoxLayout:
                     orientation: 'vertical'
                     MDToolbar:
-        		        title: 'Calculator0'
+        		        title: 'Calculator'
         		        type: 'top'
 			            left_action_items: [['menu',lambda x: nav_drawer.toggle_nav_drawer()]]
 			            elevation:10
-			        txt:
+			        MDTextField:
 			        	text: app.the_text
 			        	id: tex
-			        	height: 40
+			        	width: 500
 			        	multiline: True
-			        	font_size: 80	
+						font_size: 50
+						mode: 'rectangle'
+				        size_hint: 2,0.4
+				        padding_x: 10
+				        text_color: 0,0,0,1
 			        GridLayout:
-				    	cols: 4
-				        padding: 40
-				        spacing: 20
-				        size_hint:1,3
+				    	cols: 5
+				    	spacing: 20
+				    	padding:15
+				        size_hint: 0,1
 				        MDFillRoundFlatButton:
-				        	text: ' 1 '
-				            bg_color : 'green'
-				        	height: 160
+				        	text: '+'
+				        	font_size: 50
+	                        size: 10, 120
+                            size_hint: None, None
+				        	bold: True
+				        	on_press:
+				        		app.the_text+='+'
+				        MDFillRoundFlatButton:
+				        	text: ' - '
+				        	height: 120
 				        	font_size: 40
+				        	bold: True
+				        	on_press:app.the_text+= '-'		        	
+				        MDFillRoundFlatButton:
+				        	text: '×'
+				        	height: 120
+				        	font_size: 50
+				        	bold: True
+				        	on_press:app.the_text+='×'
+				        MDFillRoundFlatButton:
+				        	text: '÷'
+				        	height: 120
+				        	font_size: 50
+				        	bold: True
+				        	on_press:app.the_text+='÷'
+				        MDIconButton:
+				        	icon: 'close-circle-outline'
+				        	height: 120
+				        	on_press:
+				        		app.the_text=app.the_text[0:len(app.the_text)-1]
+				        MDFillRoundFlatButton:
+				        	text: '1'
+				        	height: 120
+				        	font_size: 45
 				        	bold: True
 				        	on_press:app.the_text+='1'
 				        MDFillRoundFlatButton:
-				        	text: ' 2 '
-				        	height: 160
-				        	font_size: 40
+				        	text: '2'
+				        	height: 120
+				        	font_size: 45
 				        	bold: True
-				        	on_press:app.the_text+= '2'		        	
+				        	on_press:app.the_text+='2'
 				        MDFillRoundFlatButton:
-				        	text: ' 3 '
-				        	height: 160
-				        	font_size: 40
+				        	text: '3'
+				        	height: 120
+				        	font_size: 45
 				        	bold: True
-				        	on_press:app.the_text+='3'				        	
+				        	on_press:app.the_text+='3'
 				        MDFillRoundFlatButton:
-				        	text: ' + '
-				        	height: 160
-				        	font_size: 40
+				        	text: 'sin'
+				        	height: 120
+				        	font_size: 20
 				        	bold: True
-				        	on_press:app.the_text+='+'				        	
+				        	on_press:app.the_text+='sin('   		
 				        MDFillRoundFlatButton:
-				        	text: ' 4 '
-				        	height: 160
-				        	font_size: 40
+				        	id: 'factorial'
+				        	text: ' ! '
+				        	height: 120
+				        	font_size: 30
+				        	bold: True
+				        	on_press:app.the_text+='!'
+				        MDFillRoundFlatButton:
+				        	text: '4'
+				        	height: 120
+				        	font_size: 45
 				        	bold: True
 				        	on_press:app.the_text+='4'				        	
 				        MDFillRoundFlatButton:
-				        	text: ' 5 '
-				        	height: 160
-				        	font_size: 40
+				        	text: '5'
+				        	height: 120
+				        	font_size: 45
 				        	bold: True
 				        	on_press:app.the_text+='5'				        	
 				        MDFillRoundFlatButton:
-				        	text: ' 6 '
-				        	height: 160
+				        	text: '6'
+				        	height: 120
+				        	font_size: 45
+				        	bold: True
+				        	on_press:app.the_text+='6'
+				        MDFillRoundFlatButton:
+				        	text: 'cos'
+				        	height: 120
+				        	font_size: 18
+				        	bold: True
+				        	on_press:app.the_text+='cos('
+				        MDFillRoundFlatButton:
+				        	text: '√'
+				        	height: 120
 				        	font_size: 40
 				        	bold: True
-				        	on_press:app.the_text+='6'			        	
+				        	on_press:app.the_text+='√'
 				        MDFillRoundFlatButton:
-				        	text: ' × '
-				        	height: 160
-				        	font_size: 40
+				        	text: '7'
+				        	height: 120
+				        	font_size: 45
 				        	bold: True
-				        	on_press:app.the_text+='*'				        	
+				        	on_press:app.the_text+='7'
+						MDFillRoundFlatButton:
+							text: '8'
+							height: 120
+							font_size: 40
+							bold: True
+							on_press: app.the_text+='8'
 				        MDFillRoundFlatButton:
-				        	text: ' 7 '
-				        	height: 160
-				        	font_size: 40
-				        	bold: True
-				        	on_press:app.the_text+='7'				        	
-				        MDFillRoundFlatButton:
-				        	text: ' 8 '
-				        	height: 160
-				        	font_size: 40
-				        	bold: True
-				        	on_press:app.the_text+='8'				        	
-				        MDFillRoundFlatButton:
-				        	text: ' 9 '
-				        	height: 160
+				        	text: '9'
+				        	height: 120
 				        	font_size: 40
 				        	bold: True
 				        	on_press:app.the_text+='9'
 				        MDFillRoundFlatButton:
-				        	text: '  -  '
-				        	height: 160
-				        	font_size: 32
+				        	text: 'tan'
+				        	height: 120
+				        	font_size: 20
 				        	bold: True
-				        	on_press:app.the_text+='-'
+				        	on_press:app.the_text+='tan('
+						MDFillRoundFlatButton:
+				        	text: '.'
+				        	height: 120
+				        	font_size: 80
+				        	bold: True
+				        	on_press:app.the_text+='.'
 				        MDFillRoundFlatButton:
 				        	text: 'AC'
-				        	height: 160
-				        	font_size: 35
+				        	height: 120
+				        	font_size: 20
 				        	bold: True
 				        	on_press:app.the_text =''
 				        MDFillRoundFlatButton:
-				        	text: ' 0 '
-				        	height: 160
-				        	font_size: 35
+				        	text: '0'
+				        	height: 120
+				        	font_size: 45
 				        	bold: True
-				        	on_press:app.the_text +='0'
+				        	on_press:app.the_text+='0'
 				        MDFillRoundFlatButton:
-				        	text: ' C '
-				        	height: 160
+				        	text: '='
+				        	height: 120
 				        	font_size: 40
 				        	bold: True
-				        	on_press:
-				        		app.the_text=app.the_text[0:len(app.the_text)-1]
+				        	on_press:root.calc()
 				        MDFillRoundFlatButton:
-				        	text: ' = '
-				        	height: 160
-				        	font_size: 40
+				        	text: 'log'
+				        	height: 120
+				        	font_size: 20
 				        	bold: True
-				        	on_press: app.the_text=str(eval(str(app.the_text)))
-				    MDFillRoundFlatButton:
-				        text: '       more items      '
-				        height: 120
-				        font_size: 30
-				        bold: True
-				        pos_y : 600
-				        pos_hint: {'center_x':0.5,'center_y':0.5}
-				        on_press:
-				        	root.manager.current='other'
+				        	on_press:app.the_text+='log('
+				        MDFillRoundFlatButton:
+				        	text: 'rad'
+				        	height: 120
+				        	font_size: 18
+				        	bold: True
+				        	on_press:app.the_text+='rad('
+				        MDFillRoundFlatButton:
+				        	text: 'pow'
+				        	height: 120
+				        	font_size: 12
+				        	bold: True
+				        	on_press:app.the_text+="^"
         MDNavigationDrawer:
 		    id:nav_drawer
 		    BoxLayout:
@@ -166,206 +216,36 @@ ScreenManager:
 			        	text: 'Created By Kundan Bhardwaj'
 			        	font_style: 'Overline'
 			        	font_size: 40
-			        	size_hint_y: None
 			        	bold: True
-			        	pos_hint:{'center_x':0.6,'center_y':10}
+			        	pos_hint:{'center_x':0.6,'center_y':0.5}
 			        	font_colour: "blue"
 				    MDLabel:
 			        	font_size: 40
-			        	size_hint_y: None
 			        	bold: True
-			        	pos_hint:{'center_x':0.6,'center_y':10}				    	
-				    	text: 'Just Because of good    guidelines from "Amit Sir"'
-<otherscreen>:
-	name: 'other'
-	tex: tex
-	NavigationLayout:
-        ScreenManager:
-            Screen:
-                BoxLayout:
-                    orientation: 'vertical'   
-                    MDToolbar:
-        		        title: 'Calculator'
-        		        type: 'top'
-			            left_action_items: [['arrow-left',lambda x: root.ch_sc()]]
-			            elevation:10
-			        txt:
-			        	text: app.the_text
-			        	id: tex
-			        	height: 400
-			        	multiline: True
-			        	font_size: 80	
-			        GridLayout:
-				    	cols: 5
-				        padding: 40
-				        spacing: 20
-				        size_hint : 1,3
-				        MDFillRoundFlatButton:
-				        	text: '+'
-				            bg_color : 'green'
-				        	height: 160
-				        	font_size: 40
-				        	bold: True
-				        	on_press:app.the_text+='+'
-				        MDFillRoundFlatButton:
-				        	text: '-'
-				        	height: 160
-				        	font_size: 80
-				        	bold: True
-				        	on_press:app.the_text+= '-'		        	
-				        MDFillRoundFlatButton:
-				        	text: '×'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='*'
-				        MDFillRoundFlatButton:
-				        	text: '/'
-				        	height: 160
-				        	font_size: 50
-				        	bold: True
-				        	on_press:app.the_text+='/'
-				        MDFillRoundFlatButton:
-				        	text: 'C'
-				        	height: 160
-				        	font_size: 35
-				        	bold: True
-				        	on_press:
-				        		app.the_text=app.the_text[0:len(app.the_text)-1]
-				        MDFillRoundFlatButton:
-				        	text: '1'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='1'
-				        MDFillRoundFlatButton:
-				        	text: '2'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='2'
-				        MDFillRoundFlatButton:
-				        	text: '3'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='3'
-				        MDFillRoundFlatButton:
-				        	text: '4'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='4'   		
-				        MDFillRoundFlatButton:
-				        	id: 'factorial'
-				        	text: ' ! '
-				        	height: 160
-				        	font_size: 30
-				        	bold: True
-				        	on_press:app.the_text+='!'				        	
-				        MDFillRoundFlatButton:
-				        	text: '5'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='5'				        	
-				        MDFillRoundFlatButton:
-				        	text: '6'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='6'
-				        MDFillRoundFlatButton:
-				        	text: '7'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='7'
-				        MDFillRoundFlatButton:
-				        	text: '.'
-				        	height: 160
-				        	font_size: 80
-				        	bold: True
-				        	on_press:app.the_text+='.'				        	
-				        MDFillRoundFlatButton:
-				        	text: '8'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='8'			        	
-				        MDFillRoundFlatButton:
-				        	text: '√'
-				        	height: 160
-				        	font_size: 40
-				        	bold: True
-				        	on_press:app.the_text+='√'				        	
-				        MDFillRoundFlatButton:
-				        	text: '9'
-				        	height: 160
-				        	font_size: 40
-				        	bold: True
-				        	on_press:app.the_text+='9'
-				        MDFillRoundFlatButton:
-				        	text: '0'
-				        	height: 160
-				        	font_size: 45
-				        	bold: True
-				        	on_press:app.the_text+='0'
-				        MDFillRoundFlatButton:
-				        	text: '7'
-				        	height: 160
-				        	font_size: 40
-				        	bold: True
-				        	on_press:app.the_text+='7'				        	
-				        MDFillRoundFlatButton:
-				        	text: '√'
-				        	height: 160
-				        	font_size: 40
-				        	bold: True
-				        	on_press:app.the_text+='√'
-				        MDFillRoundFlatButton:
-				        	text: 'sin'
-				        	height: 160
-				        	font_size: 20
-				        	bold: True
-				        	on_press:app.the_text+='sin('
-				        MDFillRoundFlatButton:
-				        	text: 'cos'
-				        	height: 160
-				        	font_size: 18
-				        	bold: True
-				        	on_press:app.the_text+='cos('
-				        MDFillRoundFlatButton:
-				        	text: 'tan'
-				        	height: 160
-				        	font_size: 20
-				        	bold: True
-				        	on_press:app.the_text+='tan('
-				        MDFillRoundFlatButton:
-				        	text: 'AC'
-				        	height: 160
-				        	font_size: 24
-				        	bold: True
-				        	on_press:app.the_text =''
-				        MDFillRoundFlatButton:
-				        	text: '='
-				        	height: 160
-				        	font_size: 40
-				        	bold: True
-				        	on_press:root.calc()		    	
+			        	pos_hint:{'center_x':0.6,'center_y':0.5}				    	
+				    	text: 'Just Because of    guidelines     and support from "Amit Sir"'
 """
-class MenuScreen(Screen):
+class txt(TextInput):
 	pass
-class otherscreen(Screen):
+class MenuScreen(Screen):
 	the_text=StringProperty()
 	def calc(self):
 		b=self.ids.tex.text
-		for i in ("+","-","/","*"):
-			if i in b:
-				for j in ('!','√'):
-					if j in b:
-						break
-						MDApp.get_running_app().the_text=str(eval(b))	
+		if "×" in b :
+			def aud():
+				sound=SoundLoader.load("click.wav")
+				sound.play()			
+			b=b.replace("×","*")
+		if "÷" in b :
+			b=b.replace("÷","/")
+		if "!" not in b:
+			if "√" not in b:
+				if "sin(" not in b:
+					if "cos(" not in b:
+						if "tan(" not in b:
+							if "log(" not in b:
+								if "rad(" not in b:
+									MDApp.get_running_app().the_text=str(eval(b))	
 		while "!" in b:
 			a=list(b)
 			s=a.index("!")
@@ -422,33 +302,138 @@ class otherscreen(Screen):
 			print(b)
 			print(s)
 			m=s+1
-			u=m
-			print(m)
-			for i in ("+","-","*","/"):
-				while b[u]!=i:
-					u=u+1
-			print(u)
+			t=m
+			while  t<=len(b)-1 and b[t].isdigit()==True :
+				t=t+1
+			print(t)
 			k=""
-			k=b[m:u+1]
+			k=b[m:t]
 			f=str(math.sqrt(int(k)))
 			print(f)
-			b[s]=f
-			b=b.remove(l)
+			b=b.replace("√",f)
+			b=b.replace(k,"")
+			if "!" not in b:
+				if "√" not in b:
+					MDApp.get_running_app().the_text=str(eval(b))
+		while "si" in b:
+			l=list(b)
+			s=b.find("si")
+			print(b)
+			print(s)
+			m=s+4
+			t=m
+			while  t<len(b) and b[t].isdigit()==True :
+				t=t+1
+			print(t)
+			k=""
+			k=b[m:t]
+			f=str(math.sin(math.radians(int(k))))
+			print(f)
+			b=b.replace("si",f)
+			b=b.replace(k,"")
+			b=b.replace("n","")
+			b=b.replace("(","")				
+			if "!" not in b:
+				if "√" not in b:
+					MDApp.get_running_app().the_text=str(eval(b))
+		while "c" in b:
+			l=list(b)
+			s=b.find("c")
+			print(b)
+			print(s)
+			m=s+4
+			t=m
+			while  t<len(b) and b[t].isdigit()==True :
+				t=t+1
+			print(t)
+			k=""
+			k=b[m:t]
+			f=str(math.cos(math.radians(int(k))))
+			print(f)
+			b=b.replace("c",f)
+			b=b.replace(k,"")
+			b=b.replace("o","")
+			b=b.replace("s","")
+			b=b.replace("(","")				
+			if "!" not in b:
+				if "√" not in b:
+					MDApp.get_running_app().the_text=str(eval(b))
+		while "t" in b:
+			l=list(b)
+			s=b.find("t")
+			print(b)
+			print(s)
+			m=s+4
+			t=m
+			while  t<len(b) and b[t].isdigit()==True :
+				t=t+1
+			print(t)
+			k=""
+			k=b[m:t]
+			f=str(math.tan(math.radians(int(k))))
+			print(f)
+			b=b.replace("t",f)
+			b=b.replace(k,"")
+			b=b.replace("a","")
+			b=b.replace("n","")
+			b=b.replace("(","")				
+			if "!" not in b:
+				if "√" not in b:
+					MDApp.get_running_app().the_text=str(eval(b))
+		while "lo" in b:
+			l=list(b)
+			s=b.find("lo")
+			print(b)
+			print(s)
+			m=s+4
+			t=m
+			while  t<len(b) and b[t].isdigit()==True :
+				t=t+1
+			print(t)
+			k=""
+			k=b[m:t]
+			f=str(math.log(int(k)))
+			print(f)
+			b=b.replace("lo",f)
+			b=b.replace(k,"")
+			b=b.replace("g","")
+			b=b.replace("(","")				
+			if "!" not in b:
+				if "√" not in b:
+					MDApp.get_running_app().the_text=str(eval(b))
+		while "r" in b:
+			l=list(b)
+			s=b.find("r")
+			print(b)
+			print(s)
+			m=s+4
+			t=m
+			while  t<len(b) and b[t].isdigit()==True :
+				t=t+1
+			print(t)
+			k=""
+			k=b[m:t]
+			f=str(math.radians(int(k)))
+			print(f)
+			b=b.replace("r",f)
+			b=b.replace(k,"")
+			b=b.replace("a","")
+			b=b.replace("d","")			
+			b=b.replace("(","")				
 			if "!" not in b:
 				if "√" not in b:
 					MDApp.get_running_app().the_text=str(eval(b))
 	def ch_sc(self):
 		MDApp.get_running_app().root.current = "menu"				
-class txt(TextInput):
-	pass
 class DemoApp(MDApp):
     the_text=StringProperty()
     def build(self):
-    	l=[ 'Purple', 'DeepPurple', 'Indigo', 'Blue', 'Green']
+    	l=['Indigo','Teal','Purple', 'DeepPurple', 'Blue',]
     	self.theme_cls.primary_palette = random.choice(l)
     	screen=Builder.load_string(screen_helper)
     	return screen
     def value(self):
-    	b = root.ids.txt.text
-if __name__ == "__main__":
-	DemoApp().run()
+    	b = root.ids.txt.text    	
+    	if "×" in b :
+    		b=b.replace("×","*")
+DemoApp().run()
